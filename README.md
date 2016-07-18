@@ -8,7 +8,8 @@
 
 ```
 $ gradle clean shadowJar
-$ docker build -t mcandre/hello-kafka-connect .
+...
+
 $ docker-compose rm -f && docker-compose up
 ...
 
