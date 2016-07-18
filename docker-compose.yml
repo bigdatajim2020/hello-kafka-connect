@@ -16,7 +16,7 @@ services:
 
   connect:
     build: .
-    image: 1ambda/kafka-connect
+    image: mcandre/hello-kafka-connect
     links:
       - kafka
     ports:
@@ -25,4 +25,7 @@ services:
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: connect-cluster-A
 
-
+  redis:
+    image: redis:3.2.1
+    ports:
+      - "6379:6379"

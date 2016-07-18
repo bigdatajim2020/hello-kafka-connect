@@ -7,11 +7,46 @@
 # EXAMPLE
 
 ```
-$ gradle build
+$ gradle clean shadowJar
+$ docker build -t mcandre/hello-kafka-connect .
+$ docker-compose rm -f && docker-compose up
 ...
 
-$ docker-compose up
-...
+$ curl -XPOST $(docker-machine ip default):8083/connectors \
+       -H "Content-Type: application/json" \
+       -d "{
+             \"name\": \"name-source\",
+             \"config\": {
+               \"connector.class\": \"us.yellosoft.hellokafkaconnect.NameSource\",
+               \"tasks.max\": \"1\",
+               \"kafka_topic\": \"names\",
+               \"kafka_partitions\": \"1\",
+               \"redis_address\": \"redis://$(docker-machine ip default):6379\",
+               \"name_list_key\": \"names\",
+               \"greeting_list_key\": \"greetings\"
+              }
+           }" | jq .
+
+{
+  "name": "name-source",
+  "config": {
+    "connector.class": "us.yellosoft.hellokafkaconnect.NameSource",
+    "tasks.max": "1",
+    "kafka_topic": "names",
+    "kafka_partitions": "1",
+    "redis_address": "redis://192.168.99.100:6379",
+    "name_list_key": "names",
+    "greeting_list_key": "greetings",
+    "name": "name-source"
+  },
+  "tasks": []
+}
+
+$ curl $(docker-machine ip default):8083/connectors | jq .
+
+[
+  "name-source"
+]
 ```
 
 # REQUIREMENTS
@@ -27,3 +62,4 @@ $ docker-compose up
 
 * [curl](https://curl.haxx.se/)
 * [Docker Toolbox](https://www.docker.com/products/docker-toolbox)
+* [jq](https://stedolan.github.io/jq/)
