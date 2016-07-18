@@ -48,6 +48,17 @@ $ curl $(docker-machine ip default):8083/connectors | jq .
 [
   "name-source"
 ]
+
+$ redis-cli -h $(docker-machine ip default) lpush names 'Alice'
+(integer) 1
+
+$ redis-cli -h $(docker-machine ip default) lpush names 'Bob'
+(integer) 2
+
+...
+
+$ redis-cli -h $(docker-machine ip default) llen greetings
+(integer) 0
 ```
 
 # REQUIREMENTS
