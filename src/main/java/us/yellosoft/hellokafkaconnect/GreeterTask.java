@@ -17,8 +17,6 @@ import java.nio.charset.Charset;
  * Welcomes names from Kafka
  */
 public final class GreeterTask extends SinkTask {
-  private String kafkaTopic;
-  private int kafkaPartitions;
   private URI redisAddress;
   private String greetingListKey;
 
@@ -26,9 +24,6 @@ public final class GreeterTask extends SinkTask {
 
   @Override
   public void start(final Map<String, String> props) {
-    kafkaTopic = props.get(Constants.CONFIG_KAFKA_TOPIC);
-    kafkaPartitions = Integer.parseInt(props.get(Constants.CONFIG_KAFKA_PARTITIONS));
-
     try {
       redisAddress = new URI(props.get(Constants.CONFIG_REDIS_ADDRESS));
     } catch (URISyntaxException e) {
@@ -38,6 +33,7 @@ public final class GreeterTask extends SinkTask {
     greetingListKey = props.get(Constants.CONFIG_GREETING_LIST_KEY);
 
     jedis = new Jedis(redisAddress);
+    jedis.connect();
   }
 
   @Override
@@ -48,7 +44,9 @@ public final class GreeterTask extends SinkTask {
 
       final String greeting = String.format("Welcome, %s", name);
 
-      jedis.lpush(greetingListKey, greeting);
+      if (jedis.isConnected()) {
+        jedis.lpush(greetingListKey, greeting);
+      }
     }
   }
 

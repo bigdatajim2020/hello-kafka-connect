@@ -18,7 +18,7 @@ import java.net.URISyntaxException;
  * Manages NameTask's
  */
 public final class NameSource extends SinkConnector {
-  private String kafkaTopic;
+  private String[] kafkaTopics;
   private int kafkaPartitions;
   private URI redisAddress;
   private String nameListKey;
@@ -31,7 +31,6 @@ public final class NameSource extends SinkConnector {
   @Override
   public ConfigDef config() {
     final ConfigDef configDef = new ConfigDef();
-    configDef.define(Constants.CONFIG_KAFKA_TOPIC, Type.STRING, "names", Importance.LOW, "Kafka topic for name messages");
     configDef.define(Constants.CONFIG_KAFKA_PARTITIONS, Type.INT, Range.atLeast(0), Importance.LOW, "Number of available Kafka partitions");
     configDef.define(Constants.CONFIG_REDIS_ADDRESS, Type.STRING, "redis://localhost:6379", Importance.HIGH, "Redis address (redis://<host>:<port>)");
     configDef.define(Constants.CONFIG_NAME_LIST_KEY, Type.STRING, "names", Importance.HIGH, "Redis key for name list");
@@ -41,7 +40,7 @@ public final class NameSource extends SinkConnector {
 
   @Override
   public void start(final Map<String, String> props) {
-    kafkaTopic = props.get(Constants.CONFIG_KAFKA_TOPIC);
+    kafkaTopics = props.get(Constants.CONFIG_TOPICS).split(Constants.TOPIC_DELIMITER);
     kafkaPartitions = Integer.parseInt(props.get(Constants.CONFIG_KAFKA_PARTITIONS));
 
     try {
@@ -62,7 +61,7 @@ public final class NameSource extends SinkConnector {
 
     for (int i = 0; i < maxTasks; i++) {
       final Map<String, String> config = new HashMap<>();
-      config.put(Constants.CONFIG_KAFKA_TOPIC, kafkaTopic);
+      config.put(Constants.CONFIG_TOPICS, String.join(Constants.TOPIC_DELIMITER, kafkaTopics));
       config.put(Constants.CONFIG_KAFKA_PARTITIONS, String.valueOf(kafkaPartitions));
       config.put(Constants.CONFIG_REDIS_ADDRESS, redisAddress.toString());
       config.put(Constants.CONFIG_NAME_LIST_KEY, nameListKey);

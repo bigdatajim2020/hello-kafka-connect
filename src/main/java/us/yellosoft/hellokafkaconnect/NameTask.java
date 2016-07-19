@@ -5,6 +5,10 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.data.Schema;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -18,8 +22,10 @@ import java.nio.charset.Charset;
  * Sends names to Kafka
  */
 public final class NameTask extends SourceTask {
+  private static final Logger LOG = LoggerFactory.getLogger(NameTask.class);
+
   private Random random;
-  private String kafkaTopic;
+  private String[] kafkaTopics;
   private int kafkaPartitions;
   private URI redisAddress;
   private String nameListKey;
@@ -30,29 +36,43 @@ public final class NameTask extends SourceTask {
   public void start(final Map<String, String> props) {
     random = new Random();
 
-    kafkaTopic = props.get(Constants.CONFIG_KAFKA_TOPIC);
+    kafkaTopics = props.get(Constants.CONFIG_TOPICS).split(Constants.TOPIC_DELIMITER);
     kafkaPartitions = Integer.parseInt(props.get(Constants.CONFIG_KAFKA_PARTITIONS));
 
+    final String redisAddressString = props.get(Constants.CONFIG_REDIS_ADDRESS);
+
     try {
-      redisAddress = new URI(props.get(Constants.CONFIG_REDIS_ADDRESS));
+      redisAddress = new URI(redisAddressString);
     } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
+      LOG.error("Error parsing URI {} {}", redisAddressString, e);
     }
 
     nameListKey = props.get(Constants.CONFIG_NAME_LIST_KEY);
 
     jedis = new Jedis(redisAddress);
+    jedis.connect();
   }
 
   @Override
   public List<SourceRecord> poll() {
     final List<SourceRecord> records = new LinkedList<>();
 
-    final String name = jedis.lpop(nameListKey);
-    final byte[] message = name.getBytes(Charset.forName("UTF-8"));
-    final SourceRecord record = new SourceRecord(null, null, kafkaTopic, random.nextInt(kafkaPartitions), Schema.BYTES_SCHEMA, message);
+    if (jedis.isConnected()) {
+      try {
+        final String name = jedis.lpop(nameListKey);
 
-    records.add(record);
+        if (name != null) {
+          final byte[] message = name.getBytes(Charset.forName("UTF-8"));
+
+          for (String topic : kafkaTopics) {
+            final SourceRecord record = new SourceRecord(null, null, topic, random.nextInt(kafkaPartitions), Schema.BYTES_SCHEMA, message);
+            records.add(record);
+          }
+        }
+      } catch (JedisConnectionException e) {
+        LOG.warn("Socket closed during Redis query {}", e);
+      }
+    }
 
     return records;
   }

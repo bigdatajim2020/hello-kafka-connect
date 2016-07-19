@@ -14,18 +14,19 @@ services:
       ZOOKEEPER_CONNECTION_STRING: zk:2181
       ZOOKEEPER_CHROOT: /broker-0
 
+  redis:
+    image: redis:3.2.1
+    ports:
+      - "6379:6379"
+
   connect:
     build: .
     image: mcandre/hello-kafka-connect
     links:
       - kafka
+      - redis
     ports:
       - "8083:8083"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: connect-cluster-A
-
-  redis:
-    image: redis:3.2.1
-    ports:
-      - "6379:6379"

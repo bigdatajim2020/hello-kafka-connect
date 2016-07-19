@@ -18,8 +18,6 @@ import java.net.URISyntaxException;
  * Manages GreeterTask's
  */
 public final class GreeterSink extends SinkConnector {
-  private String kafkaTopic;
-  private int kafkaPartitions;
   private URI redisAddress;
   private String greetingListKey;
 
@@ -31,8 +29,6 @@ public final class GreeterSink extends SinkConnector {
   @Override
   public ConfigDef config() {
     final ConfigDef configDef = new ConfigDef();
-    configDef.define(Constants.CONFIG_KAFKA_TOPIC, Type.STRING, "names", Importance.LOW, "Kafka topic for name messages");
-    configDef.define(Constants.CONFIG_KAFKA_PARTITIONS, Type.INT, Range.atLeast(0), Importance.LOW, "Number of Kafka partitions");
     configDef.define(Constants.CONFIG_REDIS_ADDRESS, Type.STRING, "redis://localhost:6379", Importance.HIGH, "Redis address (redis://<host>:<port>)");
     configDef.define(Constants.CONFIG_GREETING_LIST_KEY, Type.STRING, "greetings", Importance.HIGH, "Redis key for greeting list");
 
@@ -45,8 +41,6 @@ public final class GreeterSink extends SinkConnector {
 
     for (int i = 0; i < maxTasks; i++) {
       final Map<String, String> config = new HashMap<>();
-      config.put(Constants.CONFIG_KAFKA_TOPIC, kafkaTopic);
-      config.put(Constants.CONFIG_KAFKA_PARTITIONS, String.valueOf(kafkaPartitions));
       config.put(Constants.CONFIG_REDIS_ADDRESS, redisAddress.toString());
       config.put(Constants.CONFIG_GREETING_LIST_KEY, greetingListKey);
 
@@ -58,9 +52,6 @@ public final class GreeterSink extends SinkConnector {
 
   @Override
   public void start(final Map<String, String> props) {
-    kafkaTopic = props.get(Constants.CONFIG_KAFKA_TOPIC);
-    kafkaPartitions = Integer.parseInt(props.get(Constants.CONFIG_KAFKA_PARTITIONS));
-
     try {
       redisAddress = new URI(props.get(Constants.CONFIG_REDIS_ADDRESS));
     } catch (URISyntaxException e) {

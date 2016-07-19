@@ -10,7 +10,10 @@
 $ gradle clean shadowJar
 ...
 
-$ docker-compose rm -f && docker-compose up
+$ docker-compose build --no-cache
+...
+
+$ docker-compose rm -f && docker-compose up --force-recreate
 ...
 
 $ curl -XPOST $(docker-machine ip default):8083/connectors \
@@ -20,11 +23,10 @@ $ curl -XPOST $(docker-machine ip default):8083/connectors \
              \"config\": {
                \"connector.class\": \"us.yellosoft.hellokafkaconnect.NameSource\",
                \"tasks.max\": \"1\",
-               \"kafka_topic\": \"names\",
+               \"topics\": \"names\",
                \"kafka_partitions\": \"1\",
                \"redis_address\": \"redis://$(docker-machine ip default):6379\",
-               \"name_list_key\": \"names\",
-               \"greeting_list_key\": \"greetings\"
+               \"name_list_key\": \"names\"
               }
            }" | jq .
 
@@ -33,11 +35,10 @@ $ curl -XPOST $(docker-machine ip default):8083/connectors \
   "config": {
     "connector.class": "us.yellosoft.hellokafkaconnect.NameSource",
     "tasks.max": "1",
-    "kafka_topic": "names",
+    "topics": "names",
     "kafka_partitions": "1",
     "redis_address": "redis://192.168.99.100:6379",
     "name_list_key": "names",
-    "greeting_list_key": "greetings",
     "name": "name-source"
   },
   "tasks": []
@@ -48,6 +49,32 @@ $ curl $(docker-machine ip default):8083/connectors | jq .
 [
   "name-source"
 ]
+
+$ curl -XPOST $(docker-machine ip default):8083/connectors \
+       -H "Content-Type: application/json" \
+       -d "{
+             \"name\": \"greeting-sink\",
+             \"config\": {
+               \"connector.class\": \"us.yellosoft.hellokafkaconnect.GreeterSink\",
+               \"tasks.max\": \"1\",
+               \"topics\": \"names\",
+               \"redis_address\": \"redis://$(docker-machine ip default):6379\",
+               \"greeting_list_key\": \"greetings\"
+              }
+           }" | jq .
+
+{
+  "name": "greeting-sink",
+  "config": {
+    "connector.class": "us.yellosoft.hellokafkaconnect.GreeterSink",
+    "tasks.max": "1",
+    "topics": "names",
+    "redis_address": "redis://192.168.99.101:6379",
+    "greeting_list_key": "greetings",
+    "name": "greeting-sink"
+  },
+  "tasks": []
+}
 
 $ redis-cli -h $(docker-machine ip default) lpush names 'Alice'
 (integer) 1
