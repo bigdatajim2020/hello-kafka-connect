@@ -31,6 +31,7 @@ public final class NameSource extends SinkConnector {
   @Override
   public ConfigDef config() {
     final ConfigDef configDef = new ConfigDef();
+    configDef.define(Constants.CONFIG_TOPICS, Type.STRING, "names", Importance.LOW, "Topics to send Redis data");
     configDef.define(Constants.CONFIG_KAFKA_PARTITIONS, Type.INT, Range.atLeast(0), Importance.LOW, "Number of available Kafka partitions");
     configDef.define(Constants.CONFIG_REDIS_ADDRESS, Type.STRING, "redis://localhost:6379", Importance.HIGH, "Redis address (redis://<host>:<port>)");
     configDef.define(Constants.CONFIG_NAME_LIST_KEY, Type.STRING, "names", Importance.HIGH, "Redis key for name list");
