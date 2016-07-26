@@ -16,6 +16,9 @@ $ docker-compose build --no-cache
 $ docker-compose rm -f && docker-compose up --force-recreate
 ...
 
+$ kafka-topics --zookeeper $(docker-machine ip default):2181/broker-0 --create --partitions 1 --replication-factor 1 --topic names
+...
+
 $ curl -XPOST $(docker-machine ip default):8083/connectors \
        -H "Content-Type: application/json" \
        -d "{
@@ -87,6 +90,8 @@ $ redis-cli -h $(docker-machine ip default) lpush names 'Bob'
 $ redis-cli -h $(docker-machine ip default) llen greetings
 (integer) 0
 ```
+
+The manual topic creation above is a workaround for auto-topic creation failing in kafka (connect). Generally, issues abound with Kafka Connect, and have been reported to both 1ambda/docker-kafka-connect and the confluent google group. Hopefully, someone can produce a working stack + configuration + connector code, because this little hello world example does NOT currently operate successfully.
 
 # REQUIREMENTS
 
