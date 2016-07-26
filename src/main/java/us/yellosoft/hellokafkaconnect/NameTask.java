@@ -65,7 +65,11 @@ public final class NameTask extends SourceTask {
 
     if (jedis.isConnected()) {
       try {
-        final String name = jedis.lpop(nameListKey);
+        final List<String> entry = jedis.blpop(Constants.REDIS_QUERY_TIMEOUT, nameListKey);
+
+        LOG.info("NameTask#poll: received entry = " + entry);
+
+        final String name = entry.get(1);
 
         LOG.info("NameTask#poll: received name " + name + " from redis");
 

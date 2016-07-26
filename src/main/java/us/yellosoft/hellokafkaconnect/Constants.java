@@ -16,4 +16,6 @@ public final class Constants {
   public static final String CONFIG_REDIS_ADDRESS = "redis_address";
   public static final String CONFIG_NAME_LIST_KEY = "name_list_key";
   public static final String CONFIG_GREETING_LIST_KEY = "greeting_list_key";
+
+  public static final int REDIS_QUERY_TIMEOUT = 3000; // ms
 }
