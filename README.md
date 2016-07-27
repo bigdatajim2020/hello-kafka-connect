@@ -16,9 +16,14 @@ We've done most of the work with Docker Compose, but there is a small workaround
 $ git clone https://github.com/confluentinc/docker-images
 $ cd docker-images/kafka/
 $ docker build -t confluent/kafka .
-...
+$ cd ../../
+```
 
-$ cd ../../hello-kafka-connect/
+## Download the hello-kafka-connect source
+
+```
+$ git clone git@github.com:mcandre/hello-kafka-connect.git
+$ cd hello-kafka-connect/
 ```
 
 ## Package the connectors as a JAR, including any dependencies
