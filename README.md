@@ -44,6 +44,8 @@ $ docker-compose build --no-cache
 
 The Kafka and Kafka Connect nodes require advertised hostname configuration. Due to Docker kernel requirements, advertised hostnames may not simply match localhost AKA 127.0.0.1 on non-Linux system; Instead, advertised hostnames must  match the Docker Machine IP address.
 
+The `docker-compose-docker-machine.yml.sample` provides an example configuration assuming a Docker Machine IP address of `192.168.99.100`; tweak to match your `echo $(docker-machine ip default)` address, or whichever Docker Machine environment you use.
+
 ### Mac and Windows hosts
 
 ```
