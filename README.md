@@ -8,7 +8,7 @@ hello-kafka-connect is a demonstration of how to develop and deploy source and s
 
 # EXAMPLE
 
-Workaround for lack of official Confluent entry on DockerHub:
+We've done most of the work with Docker Compose, but there is a small workaround required to account for lack of official Confluent entry on DockerHub:
 
 ```
 $ git clone https://github.com/confluentinc/docker-images
