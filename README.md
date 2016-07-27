@@ -4,7 +4,11 @@
 
 [Kafka Connect](http://docs.confluent.io/2.0.0/connect/) is a secondary system on top of [Kafka](http://kafka.apache.org/) that simplifies common Kafka workflows, such as copying data between Kafka and databases, triggering actions on Kafka events, and supplying data feeds to Kafka.
 
+hello-kafka-connect is a demonstration of how to develop and deploy source and sink connectors to a Kafka Connect cluster, using Redis as an example of an external system that can integrate with Kafka.
+
 # EXAMPLE
+
+Workaround for lack of official Confluent entry on DockerHub:
 
 ```
 $ git clone https://github.com/confluentinc/docker-images
@@ -13,16 +17,32 @@ $ docker build -t confluent/kafka .
 ...
 
 $ cd ../../hello-kafka-connect/
+```
 
+Compile `src/main/...` Redis example connectors and tasks, and pack into a JAR:
+
+```
 $ gradle clean shadowJar
 ...
+```
 
+Add JAR to Kafka Connect container:
+
+```
 $ docker-compose build --no-cache
 ...
+```
 
+Launch the full Kafka Connect stack:
+
+```
 $ docker-compose rm -f && docker-compose up --force-recreate
 ...
+```
 
+Submit connectors to the Kafka cluster:
+
+```
 $ curl -XPOST $(docker-machine ip default):8083/connectors \
        -H "Content-Type: application/json" \
        -d "{
@@ -89,7 +109,11 @@ $ curl $(docker-machine ip default):8083/connectors | jq .
   "greeting-sink",
   "name-source"
 ]
+```
 
+Finally, generate sample data to trigger data flowing through the system: a Redis list -> source connector -> `names` Kafka topic -> sink connector -> another Redis list.
+
+```
 $ redis-cli -h $(docker-machine ip default) lpush names 'Alice'
 (integer) 1
 
