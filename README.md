@@ -8,7 +8,9 @@ hello-kafka-connect is a demonstration of how to develop and deploy source and s
 
 # EXAMPLE
 
-We've done most of the work with Docker Compose, but there is a small workaround required to account for lack of official Confluent entry on DockerHub:
+## Download Docker image confluent/kafka
+
+We've done most of the work with Docker Compose, but there is a small workaround required to account for lack of official Confluent entry on DockerHub.
 
 ```
 $ git clone https://github.com/confluentinc/docker-images
@@ -19,42 +21,44 @@ $ docker build -t confluent/kafka .
 $ cd ../../hello-kafka-connect/
 ```
 
-Compile `src/main/...` Redis example connectors and tasks, and pack into a JAR:
+## Package the connectors as a JAR, including any dependencies
 
 ```
 $ gradle clean shadowJar
 ...
 ```
 
-Add JAR to Kafka Connect container:
+## Place the JAR in the CLASSPATH of the Kafka Connect node
 
 ```
 $ docker-compose build --no-cache
 ...
 ```
 
+## Configure Docker Compose
+
 The Kafka and Kafka Connect nodes require advertised hostname configuration. Due to Docker kernel requirements, advertised hostnames may not simply match localhost AKA 127.0.0.1 on non-Linux system; Instead, advertised hostnames must  match the Docker Machine IP address.
 
-Mac and Windows users can configure docker-compose with:
+### Mac and Windows hosts
 
 ```
 $ ln -sf docker-compose-docker-machine.yml.sample docker-compose.yml
 ```
 
-Linux users can:
+### Linux hosts
 
 ```
 $ ln -sf docker-compose-linux-host.yml.sample docker-compose.yml
 ```
 
-Launch the full Kafka Connect stack:
+## Launch Kafka Connect
 
 ```
 $ docker-compose rm -f && docker-compose up --force-recreate
 ...
 ```
 
-Submit connectors to the Kafka cluster:
+## Submit connectors to Kafka Connect
 
 ```
 $ curl -XPOST $(docker-machine ip default):8083/connectors \
@@ -125,6 +129,8 @@ $ curl $(docker-machine ip default):8083/connectors | jq .
 ]
 ```
 
+## Supply sample data
+
 Finally, generate sample data to trigger data flowing through the system: a Redis list -> source connector -> `names` Kafka topic -> sink connector -> another Redis list.
 
 ```
@@ -133,7 +139,11 @@ $ redis-cli -h $(docker-machine ip default) lpush names 'Alice'
 
 $ redis-cli -h $(docker-machine ip default) lpush names 'Bob'
 (integer) 2
+```
 
+In seconds, data flows through Kafka Connect and back to the external Redis system:
+
+```
 $ redis-cli -h $(docker-machine ip default) lpop greetings
 "Welcome, Bob"
 
