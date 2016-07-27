@@ -7,6 +7,13 @@
 # EXAMPLE
 
 ```
+$ git clone https://github.com/confluentinc/docker-images
+$ cd docker-images/kafka/
+$ docker build -t confluent/kafka .
+...
+
+$ cd ../../hello-kafka-connect/
+
 $ gradle clean shadowJar
 ...
 
@@ -14,9 +21,6 @@ $ docker-compose build --no-cache
 ...
 
 $ docker-compose rm -f && docker-compose up --force-recreate
-...
-
-$ kafka-topics --zookeeper $(docker-machine ip default):2181/broker-0 --create --partitions 1 --replication-factor 1 --topic names
 ...
 
 $ curl -XPOST $(docker-machine ip default):8083/connectors \
@@ -79,19 +83,25 @@ $ curl -XPOST $(docker-machine ip default):8083/connectors \
   "tasks": []
 }
 
+$ curl $(docker-machine ip default):8083/connectors | jq .
+
+[
+  "greeting-sink",
+  "name-source"
+]
+
 $ redis-cli -h $(docker-machine ip default) lpush names 'Alice'
 (integer) 1
 
 $ redis-cli -h $(docker-machine ip default) lpush names 'Bob'
 (integer) 2
 
-...
+$ redis-cli -h $(docker-machine ip default) lpop greetings
+"Welcome, Bob"
 
-$ redis-cli -h $(docker-machine ip default) llen greetings
-(integer) 0
+$ redis-cli -h $(docker-machine ip default) lpop greetings
+"Welcome, Alice"
 ```
-
-The manual topic creation above is a workaround for auto-topic creation failing in kafka (connect). Generally, issues abound with Kafka Connect, and have been reported to both 1ambda/docker-kafka-connect and the confluent google group. Hopefully, someone can produce a working stack + configuration + connector code, because this little hello world example does NOT currently operate successfully.
 
 # REQUIREMENTS
 
@@ -99,7 +109,7 @@ The manual topic creation above is a workaround for auto-topic creation failing 
 * [Gradle](http://gradle.org/) 2.7+
 * [ZooKeeper](https://zookeeper.apache.org/) 3+
 * [Kafka](http://kafka.apache.org/) 0.10+
-* [Kafka Connect](http://docs.confluent.io/2.0.0/connect/) 0.10+
+* [Kafka Connect](http://docs.confluent.io/3.0.0/connect/) 0.10+
 * [Redis](http://redis.io/) 3+
 
 ## Optional
