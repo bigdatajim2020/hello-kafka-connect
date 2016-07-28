@@ -34,14 +34,10 @@ public final class NameTask extends SourceTask {
 
   @Override
   public void start(final Map<String, String> props) {
-    LOG.info("NameTask#start(props=" + props + ")");
-
     random = new Random();
 
     kafkaTopics = props.get(Constants.CONFIG_TOPICS).split(Constants.TOPIC_DELIMITER);
     kafkaPartitions = Integer.parseInt(props.get(Constants.CONFIG_KAFKA_PARTITIONS));
-
-    LOG.info("NameTask#start: configured destination topics = " + String.join(Constants.TOPIC_DELIMITER, kafkaTopics));
 
     final String redisAddressString = props.get(Constants.CONFIG_REDIS_ADDRESS);
 
@@ -59,28 +55,19 @@ public final class NameTask extends SourceTask {
 
   @Override
   public List<SourceRecord> poll() {
-    LOG.info("NameTask#poll");
-
     final List<SourceRecord> records = new LinkedList<>();
 
     if (jedis.isConnected()) {
       try {
         final List<String> entry = jedis.blpop(Constants.REDIS_QUERY_TIMEOUT, nameListKey);
 
-        LOG.info("NameTask#poll: received entry = " + entry);
-
         final String name = entry.get(1);
-
-        LOG.info("NameTask#poll: received name " + name + " from redis");
 
         if (name != null) {
           final byte[] message = name.getBytes(Charset.forName("UTF-8"));
 
           for (String topic : kafkaTopics) {
             final SourceRecord record = new SourceRecord(null, null, topic, random.nextInt(kafkaPartitions), Schema.BYTES_SCHEMA, message);
-
-            LOG.info("NameTask#poll: Created record = " + record);
-
             records.add(record);
           }
         }
@@ -94,15 +81,11 @@ public final class NameTask extends SourceTask {
 
   @Override
   public void stop() {
-    LOG.info("NameTask#stop");
-
     jedis.disconnect();
   }
 
   @Override
   public String version() {
-    LOG.info("NameTask#version");
-
     return Constants.VERSION;
   }
 }

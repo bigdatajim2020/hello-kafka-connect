@@ -7,9 +7,6 @@ import org.apache.kafka.common.config.ConfigDef.Type;
 import org.apache.kafka.common.config.ConfigDef.Range;
 import org.apache.kafka.common.config.ConfigDef.Importance;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
@@ -21,8 +18,6 @@ import java.net.URISyntaxException;
  * Manages NameTask's
  */
 public final class NameSource extends SinkConnector {
-  private static final Logger LOG = LoggerFactory.getLogger(NameSource.class);
-
   private String[] kafkaTopics;
   private int kafkaPartitions;
   private URI redisAddress;
@@ -30,15 +25,11 @@ public final class NameSource extends SinkConnector {
 
   @Override
   public Class<? extends Task> taskClass() {
-    LOG.info("NameSource#taskClass");
-
     return NameTask.class;
   }
 
   @Override
   public ConfigDef config() {
-    LOG.info("NameSource#config");
-
     final ConfigDef configDef = new ConfigDef();
     configDef.define(Constants.CONFIG_KAFKA_PARTITIONS, Type.INT, Range.atLeast(0), Importance.LOW, "Number of available Kafka partitions");
     configDef.define(Constants.CONFIG_REDIS_ADDRESS, Type.STRING, "redis://localhost:6379", Importance.HIGH, "Redis address (redis://<host>:<port>)");
@@ -49,8 +40,6 @@ public final class NameSource extends SinkConnector {
 
   @Override
   public void start(final Map<String, String> props) {
-    LOG.info("NameSource#start(props=" + props + ")");
-
     kafkaTopics = props.get(Constants.CONFIG_TOPICS).split(Constants.TOPIC_DELIMITER);
     kafkaPartitions = Integer.parseInt(props.get(Constants.CONFIG_KAFKA_PARTITIONS));
 
@@ -64,14 +53,10 @@ public final class NameSource extends SinkConnector {
   }
 
   @Override
-  public void stop() {
-    LOG.info("NameSource#stop");
-  }
+  public void stop() {}
 
   @Override
   public List<Map<String, String>> taskConfigs(final int maxTasks) {
-    LOG.info("NameSource#taskConfigs(maxTasks=" + maxTasks +")");
-
     final List<Map<String, String>> configs = new LinkedList<>();
 
     for (int i = 0; i < maxTasks; i++) {
@@ -88,8 +73,6 @@ public final class NameSource extends SinkConnector {
 
   @Override
   public String version() {
-    LOG.info("NameSource#version");
-
     return Constants.VERSION;
   }
 }

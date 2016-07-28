@@ -65,6 +65,22 @@ $ docker-compose rm -f && docker-compose up --force-recreate
 ...
 ```
 
+## Ensure full Kafka topic creation
+
+Work around an issue with Kafka Connect topic creation by manually creating topics:
+
+```
+$ kafka-topics --zookeeper $(docker-machine ip default):2181 --create --topic names --partitions 1 --replication-factor 1
+Created topic "names".
+
+$ kafka-topics --zookeeper $(docker-machine ip default):2181 --list
+__consumer_offsets
+connect-configs
+connect-offsets
+connect-status
+names
+```
+
 ## Submit connectors to Kafka Connect
 
 ```
@@ -172,3 +188,26 @@ $ redis-cli -h $(docker-machine ip default) lpop greetings
 * [curl](https://curl.haxx.se/)
 * [Docker Toolbox](https://www.docker.com/products/docker-toolbox)
 * [jq](https://stedolan.github.io/jq/)
+
+# INTEGRATION TEST
+
+Once Kafka Connect is running and has the topics it needs, the Redis insertion / data flow / Redis lookup commands can be automated with Cucumber:
+
+```
+$ gradle cucumber
+Feature: Kafka Connect integration
+
+  Scenario: Hello World kafka connect                             # kafka-connect.feature:2
+    Given redis is running at URI "redis://192.168.99.100:6379"   # StepDefinitions.redisIsRunningAtURI(String)
+    When a supplier generates names onto redis list "names"       # StepDefinitions.aSupplierGeneratesNamesOntoRedisList(String)
+    Then connectors welcome the names onto redis list "greetings" # StepDefinitions.connectorsWelcomeTheNamesOntoRedisList(String)
+
+1 Scenarios (1 passed)
+3 Steps (3 passed)
+0m3.322s
+
+
+BUILD SUCCESSFUL
+
+Total time: 4.514 secs
+```
