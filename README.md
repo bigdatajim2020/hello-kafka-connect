@@ -1,12 +1,33 @@
 # hello-kafka-connect - example Kafka Connect source and sink
 
+# EXAMPLE
+
+```
+$ gradle cucumber
+Feature: Kafka Connect integration
+
+  Scenario: Hello World kafka connect                             # kafka-connect.feature:2
+    Given redis is running at URI "redis://192.168.99.100:6379"   # StepDefinitions.redisIsRunningAtURI(String)
+    When a supplier generates names onto redis list "names"       # StepDefinitions.aSupplierGeneratesNamesOntoRedisList(String)
+    Then connectors welcome the names onto redis list "greetings" # StepDefinitions.connectorsWelcomeTheNamesOntoRedisList(String)
+
+1 Scenarios (1 passed)
+3 Steps (3 passed)
+0m3.322s
+
+
+BUILD SUCCESSFUL
+
+Total time: 4.514 secs
+```
+
 # ABOUT
 
 [Kafka Connect](http://docs.confluent.io/2.0.0/connect/) is a secondary system on top of [Kafka](http://kafka.apache.org/) that simplifies common Kafka workflows, such as copying data between Kafka and databases, triggering actions on Kafka events, and supplying data feeds to Kafka.
 
 hello-kafka-connect is a demonstration of how to develop and deploy source and sink connectors to a Kafka Connect cluster, using Redis as an example of an external system that can integrate with Kafka, and docker(-compose) as an example way to provision a Kafka Connect cluster.
 
-# EXAMPLE
+# SETUP
 
 ## Download Docker image confluent/kafka
 
@@ -188,26 +209,3 @@ $ redis-cli -h $(docker-machine ip default) lpop greetings
 * [curl](https://curl.haxx.se/)
 * [Docker Toolbox](https://www.docker.com/products/docker-toolbox)
 * [jq](https://stedolan.github.io/jq/)
-
-# INTEGRATION TEST
-
-Once Kafka Connect is running and has the topics it needs, the Redis insertion / data flow / Redis lookup commands can be automated with Cucumber:
-
-```
-$ gradle cucumber
-Feature: Kafka Connect integration
-
-  Scenario: Hello World kafka connect                             # kafka-connect.feature:2
-    Given redis is running at URI "redis://192.168.99.100:6379"   # StepDefinitions.redisIsRunningAtURI(String)
-    When a supplier generates names onto redis list "names"       # StepDefinitions.aSupplierGeneratesNamesOntoRedisList(String)
-    Then connectors welcome the names onto redis list "greetings" # StepDefinitions.connectorsWelcomeTheNamesOntoRedisList(String)
-
-1 Scenarios (1 passed)
-3 Steps (3 passed)
-0m3.322s
-
-
-BUILD SUCCESSFUL
-
-Total time: 4.514 secs
-```
