@@ -49,5 +49,7 @@ public class StepDefinitions {
     long greetingCount = jedis.llen(redisList);
 
     Assert.assertEquals(names.size(), greetingCount);
+
+    jedis.del(redisList);
   }
 }
