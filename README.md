@@ -209,3 +209,7 @@ $ redis-cli -h $(docker-machine ip default) lpop greetings
 * [curl](https://curl.haxx.se/)
 * [Docker Toolbox](https://www.docker.com/products/docker-toolbox)
 * [jq](https://stedolan.github.io/jq/)
+
+# See Also
+
+For a more basic Kafka hello world example, see https://github.com/mcandre/hello-kafka
