@@ -121,7 +121,7 @@ $ curl -XPOST $(docker-machine ip default):8083/connectors \
     "connector.class": "us.yellosoft.hellokafkaconnect.GreeterSink",
     "tasks.max": "1",
     "topics": "names",
-    "redis_address": "redis://192.168.99.101:6379",
+    "redis_address": "redis://192.168.99.100:6379",
     "greeting_list_key": "greetings",
     "name": "greeting-sink"
   },
