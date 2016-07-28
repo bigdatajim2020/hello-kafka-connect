@@ -1,5 +1,9 @@
 # hello-kafka-connect - example Kafka Connect source and sink
 
+# FAIL
+
+Note: Debezium, one of the very few providers of Kafka/Connect containers, broke this hello world example when they released breaking changes under the same version tag. So none of this works anymore.
+
 # ABOUT
 
 [Kafka Connect](http://docs.confluent.io/2.0.0/connect/) is a secondary system on top of [Kafka](http://kafka.apache.org/) that simplifies common Kafka workflows, such as copying data between Kafka and databases, triggering actions on Kafka events, and supplying data feeds to Kafka.
