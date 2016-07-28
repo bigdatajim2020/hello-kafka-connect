@@ -1,3 +1,3 @@
-FROM debezium/connect:0.2
+FROM 1ambda/kafka-connect:latest
 MAINTAINER Andrew Pennebaker <andrew.pennebaker@gmail.com>
 COPY build/libs/hello-kafka-connect-all.jar $KAFKA_HOME/connectors/
