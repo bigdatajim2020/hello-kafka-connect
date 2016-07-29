@@ -34,7 +34,7 @@ hello-kafka-connect is a demonstration of how to develop and deploy source and s
 We've done most of the work with Docker Compose, but there is a small workaround required to account for the lack of an official Confluent entry on DockerHub.
 
 ```
-$ git clone https://github.com/confluentinc/docker-images
+$ git clone git@github.com:confluentinc/docker-images.git
 $ cd docker-images/kafka/
 $ docker build -t confluent/kafka .
 $ cd ../../
