@@ -67,10 +67,18 @@ The Kafka and Kafka Connect nodes require advertised hostname configuration. Due
 
 `docker-compose-docker-machine.yml.sample` provides an example configuration assuming a Docker Machine IP address of `192.168.99.100`; tweak to match your `echo $(docker-machine ip default)` address, or whichever Docker Machine environment you use.
 
-### Mac and Windows hosts
+### non-Linux hosts
+
+non-Linux users (e.g. Mac OS) can configure docker-compose with:
 
 ```
 $ ln -sf docker-compose-docker-machine.yml.sample docker-compose.yml
+```
+
+Windows users can create a soft link in an administrator shell, using [mklink](https://technet.microsoft.com/en-us/library/cc753194(v=ws.11).aspx):
+
+```
+C:\ admin> cmd /c mklink docker-compose.yml docker-compose-docker-machine.yml.sample
 ```
 
 ### Linux hosts
