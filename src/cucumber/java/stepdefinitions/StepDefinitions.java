@@ -32,6 +32,8 @@ public class StepDefinitions {
 
   @When("^a supplier generates names onto redis list \"(.+)\"$")
   public void aSupplierGeneratesNamesOntoRedisList(String redisList) {
+    jedis.del(redisList);
+
     for (int i = 0; i < COUNT; i++) {
       final String name = randomNameGenerator.nextFullName();
 
