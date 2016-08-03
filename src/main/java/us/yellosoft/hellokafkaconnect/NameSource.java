@@ -1,6 +1,6 @@
 package us.yellosoft.hellokafkaconnect;
 
-import org.apache.kafka.connect.sink.SinkConnector;
+import org.apache.kafka.connect.source.SourceConnector;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.ConfigDef.Type;
@@ -17,7 +17,7 @@ import java.net.URISyntaxException;
 /**
  * Manages NameTask's
  */
-public final class NameSource extends SinkConnector {
+public final class NameSource extends SourceConnector {
   private String[] kafkaTopics;
   private int kafkaPartitions;
   private URI redisAddress;
