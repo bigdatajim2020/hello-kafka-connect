@@ -8,4 +8,3 @@
 
 source_up
 source "$HOME/.bashrc.d/direnv/jenv.sh"
-source "$HOME/.bashrc.d/direnv/docker-machine.sh"
