@@ -206,7 +206,7 @@ $ redis-cli -h $(docker-machine ip default) lpop greetings
 # REQUIREMENTS
 
 * [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 1.8+
-* [Gradle](http://gradle.org/) 2.7+
+* [gradle](http://gradle.org/) 2.7+
 * [ZooKeeper](https://zookeeper.apache.org/) 3+
 * [Kafka](http://kafka.apache.org/) 0.10+
 * [Kafka Connect](http://docs.confluent.io/3.0.0/connect/) 0.10+
