@@ -217,6 +217,8 @@ $ redis-cli -h $(docker-machine ip default) lpop greetings
 * [curl](https://curl.haxx.se/)
 * [Docker Toolbox](https://www.docker.com/products/docker-toolbox)
 * [jq](https://stedolan.github.io/jq/)
+* [editorconfig-cli](https://github.com/amyboyd/editorconfig-cli) (e.g. `go get github.com/amyboyd/editorconfig-cli`)
+* [flcl](https://github.com/mcandre/flcl) (e.g. `go get github.com/mcandre/flcl/...`)
 
 # See Also
 
